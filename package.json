@@ -10,7 +10,8 @@
     "dev": "vite",
     "start": "next start",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+     "start": "vite preview --host 0.0.0.0 --port $PORT"
   },
   "dependencies": {
     "@headlessui/react": "^2.2.10",
