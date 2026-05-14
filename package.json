@@ -8,6 +8,7 @@
   },
   "scripts": {
     "dev": "vite",
+    "start": "next start",
     "build": "vite build",
     "preview": "vite preview"
   },
