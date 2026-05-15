@@ -42,7 +42,7 @@ export const Login: React.FC = () => {
     { email: 'krishna@krify.com', role: 'Super Admin' },
     { email: 'madhav@krify.com', role: 'Project Manager' },
     { email: 'sudha@krify.com', role: 'Sales Coordinator' },
-    { email: 'karimunnisa@krify.com', role: 'Developer' }
+    { email: 'karimunnisa@krify.com', role: 'Developer' },
   ];
 
   return (

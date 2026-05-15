@@ -146,7 +146,6 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onToggle }) => {
   );
 
   const isActive = (path: string) => location.pathname.startsWith(path);
-  const isExactActive = (path: string) => location.pathname === path;
 
   return (
     <aside
@@ -157,7 +156,8 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onToggle }) => {
     >
       {/* Logo Section */}
       <div className="flex items-center justify-between h-16 px-4 border-b border-gray-200">
-        <div className={cn('flex items-center gap-3', !isOpen && 'justify-center w-full')}>\n          <div className="flex items-center justify-center w-10 h-10 bg-blue-600 rounded-lg shrink-0">
+        <div className={cn('flex items-center gap-3', !isOpen && 'justify-center w-full')}>
+          <div className="flex items-center justify-center w-10 h-10 bg-blue-600 rounded-lg shrink-0">
             <Building2 className="w-6 h-6 text-white" />
           </div>
           {isOpen && (
@@ -182,7 +182,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onToggle }) => {
       {!isOpen && (
         <button
           onClick={onToggle}
-          className="absolute -right-3 top-20 w-6 h-6 bg-blue-600 rounded-full flex items-center justify-center text-white hover:bg-blue-700 transition-colors"
+          className="absolute -right-3 top-20 w-6 h-6 bg-blue-600 rounded-full flex items-center justify-center text-white hover:bg-blue-700 transition-colors shadow-lg"
         >
           <ChevronRight className="w-4 h-4" />
         </button>
@@ -226,15 +226,16 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onToggle }) => {
                     <ul className="mt-1 ml-4 pl-4 border-l border-gray-200 space-y-1">
                       {filteredChildren.map((child) => {
                         const ChildIcon = child.icon;
-                        const childActive = isExactActive(child.path);
                         return (
                           <li key={child.id}>
                             <NavLink
                               to={child.path}
-                              className={cn(
-                                'flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-colors',
-                                childActive ? 'bg-blue-50 text-blue-700' : 'text-gray-600 hover:bg-gray-100'
-                              )}
+                              className={({ isActive }) =>
+                                cn(
+                                  'flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-colors',
+                                  isActive ? 'bg-blue-50 text-blue-700' : 'text-gray-600 hover:bg-gray-100'
+                                )
+                              }
                             >
                               <ChildIcon className="w-4 h-4 shrink-0" />
                               <span>{child.label}</span>
@@ -252,12 +253,14 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onToggle }) => {
               <li key={item.id}>
                 <NavLink
                   to={item.path}
-                  className={cn(
-                    'flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors relative',
-                    active ? 'bg-blue-50 text-blue-700' : 'text-gray-700 hover:bg-gray-100'
-                  )}
+                  className={({ isActive }) =>
+                    cn(
+                      'flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors relative',
+                      isActive ? 'bg-blue-50 text-blue-700' : 'text-gray-700 hover:bg-gray-100'
+                    )
+                  }
                 >
-                  <Icon className={cn('w-5 h-5 shrink-0', active ? 'text-blue-600' : 'text-gray-500')} />
+                  <Icon className={cn('w-5 h-5 shrink-0', 'text-gray-500')} />
                   {isOpen && (
                     <>
                       <span className="text-sm font-medium flex-1">{item.label}</span>
@@ -269,7 +272,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onToggle }) => {
                     </>
                   )}
                   {!isOpen && item.badge && (
-                    <span className="absolute -top-1 -right-1 w-5 h-5 text-xs font-medium bg-red-500 text-white rounded-full flex items-center justify-center">
+                    <span className="absolute top-2 right-2 w-5 h-5 text-xs font-medium bg-red-500 text-white rounded-full flex items-center justify-center">
                       {item.badge}
                     </span>
                   )}

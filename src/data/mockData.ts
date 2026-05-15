@@ -857,125 +857,23 @@ export const mockTasks: Task[] = [
 // ==========================================
 
 export const mockMilestones: Milestone[] = [
-  // Infynix Milestones
-  {
-    id: 'mil-001',
-    projectId: 'proj-001',
-    projectName: 'Infynix - Customer Portal',
-    name: 'Kickstart Payment',
-    type: 'Advance',
-    amount: 5000,
-    dueDate: addMonths(-5),
-    paymentStatus: 'Received',
-    paymentReceivedDate: addMonths(-5),
-    notes: '25% Kickstart received'
-  },
-  {
-    id: 'mil-002',
-    projectId: 'proj-001',
-    projectName: 'Infynix - Customer Portal',
-    name: 'UI/UX Payment',
-    type: 'Demo-1',
-    amount: 5000,
-    dueDate: addMonths(-3),
-    paymentStatus: 'Received',
-    paymentReceivedDate: addMonths(-3),
-    notes: '25% UI/UX completed'
-  },
-  {
-    id: 'mil-003',
-    projectId: 'proj-001',
-    projectName: 'Infynix - Customer Portal',
-    name: 'Demo-1 Payment',
-    type: 'Demo-2',
-    amount: 5000,
-    dueDate: addDays(-15),
-    paymentStatus: 'Pending',
-    notes: '25% Demo-1 pending'
-  },
-  {
-    id: 'mil-004',
-    projectId: 'proj-001',
-    projectName: 'Infynix - Customer Portal',
-    name: 'Demo-2 Payment',
-    type: 'Demo-3',
-    amount: 5000,
-    dueDate: addDays(30),
-    paymentStatus: 'Pending',
-    notes: '25% Demo-2 pending'
-  },
-  // Oneflow Milestones
-  {
-    id: 'mil-005',
-    projectId: 'proj-004',
-    projectName: 'Oneflow - V1.5',
-    name: 'Sleep Mode and Device Names Payment',
-    type: 'UAT',
-    amount: 3500,
-    dueDate: addDays(7),
-    paymentStatus: 'Pending',
-    notes: '12 days effort - Sleep mode and Device names module'
-  },
-  // Avisdevente Milestones
-  {
-    id: 'mil-006',
-    projectId: 'proj-005',
-    projectName: 'Avisdevente Mobile Apps',
-    name: 'Kickstart',
-    type: 'Advance',
-    amount: 2000,
-    dueDate: addMonths(-4),
-    paymentStatus: 'Received',
-    paymentReceivedDate: addMonths(-4),
-    notes: '20% Kickstart received'
-  },
-  {
-    id: 'mil-007',
-    projectId: 'proj-005',
-    projectName: 'Avisdevente Mobile Apps',
-    name: 'Demo-1',
-    type: 'Demo-1',
-    amount: 4000,
-    dueDate: addMonths(-2),
-    paymentStatus: 'Received',
-    paymentReceivedDate: addMonths(-2),
-    notes: '40% Demo-1 received'
-  },
-  {
-    id: 'mil-008',
-    projectId: 'proj-005',
-    projectName: 'Avisdevente Mobile Apps',
-    name: 'Demo-2',
-    type: 'Demo-2',
-    amount: 4000,
-    dueDate: addDays(15),
-    paymentStatus: 'Pending',
-    notes: '40% Demo-2 pending'
-  },
-  // 9Gains Milestones
-  {
-    id: 'mil-009',
-    projectId: 'proj-006',
-    projectName: '9Gains',
-    name: 'Milestone 1',
-    type: 'Advance',
-    amount: 2500,
-    dueDate: addMonths(-8),
-    paymentStatus: 'Received',
-    paymentReceivedDate: addMonths(-8),
-    notes: 'Kickstart 5% + Milestone 1 5%'
-  },
-  {
-    id: 'mil-010',
-    projectId: 'proj-006',
-    projectName: '9Gains',
-    name: 'Milestone 2',
-    type: 'Demo-1',
-    amount: 12500,
-    dueDate: addDays(30),
-    paymentStatus: 'Pending',
-    notes: '25% Milestone 2'
-  }
+  { id: 'mil-001', projectId: 'proj-001', projectName: 'Infynix - Customer Portal', name: 'Kickstart Payment', type: 'Advance', category: 'sales', amount: 5000, dueDate: addMonths(-5), paymentStatus: 'Received', paymentReceivedDate: addMonths(-5), notes: '25% Kickstart received' },
+  { id: 'mil-002', projectId: 'proj-001', projectName: 'Infynix - Customer Portal', name: 'UI/UX Approval', type: 'Demo-1', category: 'operational', amount: 0, dueDate: addMonths(-3), paymentStatus: 'Received', paymentReceivedDate: addMonths(-3), notes: 'Designs approved by client' },
+  { id: 'mil-003', projectId: 'proj-001', projectName: 'Infynix - Customer Portal', name: 'Demo-1 Payment', type: 'Demo-2', category: 'sales', amount: 5000, dueDate: addDays(-15), paymentStatus: 'Pending', notes: '25% Demo-1 pending' },
+  { id: 'mil-004', projectId: 'proj-001', projectName: 'Infynix - Customer Portal', name: 'Demo-1 Delivery', type: 'Demo-1', category: 'operational', amount: 0, dueDate: addDays(-10), paymentStatus: 'Pending', notes: 'Demo-1 build delivery to client' },
+  { id: 'mil-005', projectId: 'proj-001', projectName: 'Infynix - Customer Portal', name: 'Demo-2 Payment', type: 'Demo-3', category: 'sales', amount: 5000, dueDate: addDays(30), paymentStatus: 'Pending', notes: '25% Demo-2 pending' },
+  { id: 'mil-006', projectId: 'proj-001', projectName: 'Infynix - Customer Portal', name: 'Demo-2 Delivery', type: 'Demo-2', category: 'operational', amount: 0, dueDate: addDays(25), paymentStatus: 'Pending', notes: 'Demo-2 build delivery' },
+  { id: 'mil-007', projectId: 'proj-004', projectName: 'Oneflow - V1.5', name: 'Final Payment', type: 'UAT', category: 'sales', amount: 3500, dueDate: addDays(7), paymentStatus: 'Pending', notes: 'Sleep mode module payment' },
+  { id: 'mil-008', projectId: 'proj-004', projectName: 'Oneflow - V1.5', name: 'UAT Sign-off', type: 'UAT', category: 'operational', amount: 0, dueDate: addDays(5), paymentStatus: 'Pending', notes: 'Client UAT approval needed' },
+  { id: 'mil-009', projectId: 'proj-005', projectName: 'Avisdevente Mobile Apps', name: 'Kickstart', type: 'Advance', category: 'sales', amount: 2000, dueDate: addMonths(-4), paymentStatus: 'Received', paymentReceivedDate: addMonths(-4), notes: '20% Kickstart received' },
+  { id: 'mil-010', projectId: 'proj-005', projectName: 'Avisdevente Mobile Apps', name: 'Demo-1 Payment', type: 'Demo-1', category: 'sales', amount: 4000, dueDate: addMonths(-2), paymentStatus: 'Received', paymentReceivedDate: addMonths(-2), notes: '40% Demo-1 received' },
+  { id: 'mil-011', projectId: 'proj-005', projectName: 'Avisdevente Mobile Apps', name: 'Demo-2 Payment', type: 'Demo-2', category: 'sales', amount: 4000, dueDate: addDays(15), paymentStatus: 'Pending', notes: '40% Demo-2 pending' },
+  { id: 'mil-012', projectId: 'proj-005', projectName: 'Avisdevente Mobile Apps', name: 'Demo-2 Delivery', type: 'Demo-2', category: 'operational', amount: 0, dueDate: addDays(12), paymentStatus: 'Pending', notes: 'Build with in-app purchases & social logins' },
+  { id: 'mil-013', projectId: 'proj-006', projectName: '9Gains', name: 'Kickstart + Milestone 1', type: 'Advance', category: 'sales', amount: 2500, dueDate: addMonths(-8), paymentStatus: 'Received', paymentReceivedDate: addMonths(-8), notes: '10% combined' },
+  { id: 'mil-014', projectId: 'proj-006', projectName: '9Gains', name: 'Milestone 2 Payment', type: 'Demo-1', category: 'sales', amount: 12500, dueDate: addDays(30), paymentStatus: 'Pending', notes: '25% Milestone 2' },
+  { id: 'mil-015', projectId: 'proj-006', projectName: '9Gains', name: 'Milestone 2 Demo', type: 'Demo-1', category: 'operational', amount: 0, dueDate: addDays(28), paymentStatus: 'Pending', notes: 'Vendor + Customer module demo' },
+  { id: 'mil-016', projectId: 'proj-011', projectName: 'Krazy Keys', name: 'Demo-2 Payment', type: 'Demo-2', category: 'sales', amount: 3000, dueDate: addDays(3), paymentStatus: 'Pending', notes: '25% Demo-2' },
+  { id: 'mil-017', projectId: 'proj-011', projectName: 'Krazy Keys', name: 'App Store Submission', type: 'Go Live', category: 'operational', amount: 0, dueDate: addDays(10), paymentStatus: 'Pending', notes: 'iOS App Store submission' },
 ];
 
 // ==========================================

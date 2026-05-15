@@ -116,12 +116,15 @@ export interface Attachment {
   uploadedAt: Date;
 }
 
+export type MilestoneCategory = 'sales' | 'operational';
+
 export interface Milestone {
   id: string;
   projectId: string;
   projectName: string;
   name: string;
   type: 'Advance' | 'Demo-1' | 'Demo-2' | 'Demo-3' | 'UAT' | 'Go Live' | 'Maintenance Renewal';
+  category: MilestoneCategory;
   amount: number;
   dueDate: Date;
   invoiceNumber?: string;
@@ -204,8 +207,34 @@ export interface WeeklyMeeting {
   meetingDate: Date;
   meetingNotes: string;
   projectStatuses: ProjectWeeklyStatus[];
+  // Resource Availability Section
+  resourceAvailability?: ResourceAvailabilityEntry[];
+  // Last Week Achievements Section
+  lastWeekAchievements?: WeeklyAchievements;
   createdBy: string;
   createdAt: Date;
+}
+
+export interface ResourceAvailabilityEntry {
+  resourceName: string;
+  department: string;
+  occupancy: number;
+  currentProject: string;
+  availableHours: number;
+  notes: string;
+}
+
+export interface WeeklyAchievements {
+  projectFundsReceived: AchievementEntry[];
+  amcFundsReceived: AchievementEntry[];
+  projectsGoLive: AchievementEntry[];
+  otherAchievements: string[];
+}
+
+export interface AchievementEntry {
+  projectName: string;
+  amount?: number;
+  notes: string;
 }
 
 export interface ProjectWeeklyStatus {
@@ -230,6 +259,10 @@ export interface Notification {
   isRead: boolean;
   createdAt: Date;
   link?: string;
+  forRole?: UserRole[];
+  forUser?: string;
+  projectName?: string;
+  taskId?: string;
 }
 
 export interface DashboardStats {

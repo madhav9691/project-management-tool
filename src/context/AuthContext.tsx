@@ -25,7 +25,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   useEffect(() => {
     // Check for saved session
-    const savedUser = localStorage.getItem('krify_user');
+    const savedUser = localStorage.getItem('krify_db_session');
     if (savedUser) {
       setUser(JSON.parse(savedUser));
     }
@@ -39,7 +39,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     
     if (foundUser && password === 'password') {
       setUser(foundUser);
-      localStorage.setItem('krify_user', JSON.stringify(foundUser));
+      localStorage.setItem('krify_db_session', JSON.stringify(foundUser));
       return true;
     }
     return false;
@@ -47,7 +47,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const logout = () => {
     setUser(null);
-    localStorage.removeItem('krify_user');
+    localStorage.removeItem('krify_db_session');
   };
 
   const hasPermission = (permission: string): boolean => {

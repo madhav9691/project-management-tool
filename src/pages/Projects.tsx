@@ -1,12 +1,18 @@
 // ==========================================
 // KRIFY SOFTWARE TECHNOLOGIES
-// PROJECTS PAGE
+// PROJECTS PAGE - WITH USER ASSIGNMENT FILTERING
 // ==========================================
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ProjectCard } from '../components/Projects/ProjectCard';
+import { ProjectForm } from '../components/Projects/ProjectForm';
+import { ProjectDetail } from '../components/Projects/ProjectDetail';
 import { mockProjects } from '../data/mockData';
-import type { ProjectType, ProjectPhase, TaskPriority } from '../types';
+import { getProjectsFromStorage, saveProjectsToStorage } from '../utils/storage';
+import { useAuth } from '../context/AuthContext';
+import { filterProjectsByUser, canManageProjects } from '../utils/permissions';
+import { notifyProjectCreated, notifyProjectUpdated, notifyProjectDeleted } from '../utils/notificationEngine';
+import type { ProjectType, ProjectPhase, TaskPriority, Project } from '../types';
 import { cn } from '../utils/cn';
 
 import {
@@ -18,20 +24,106 @@ import {
   Download,
   FolderKanban,
   Users,
-  Shield
+  Shield,
+  Eye,
+  Edit2,
+  Trash2,
+  Info
 } from 'lucide-react';
 
 export const Projects: React.FC = () => {
+  const { user } = useAuth();
   const [activeTab, setActiveTab] = useState<ProjectType>('running');
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [searchQuery, setSearchQuery] = useState('');
   const [showFilters, setShowFilters] = useState(false);
+  const [showProjectForm, setShowProjectForm] = useState(false);
+  const [showProjectDetail, setShowProjectDetail] = useState(false);
+  const [editingProject, setEditingProject] = useState<Project | null>(null);
+  const [viewingProject, setViewingProject] = useState<Project | null>(null);
   
   // Filter states
   const [selectedPhase, setSelectedPhase] = useState<ProjectPhase | 'all'>('all');
   const [selectedPriority, setSelectedPriority] = useState<TaskPriority | 'all'>('all');
 
-  const filteredProjects = mockProjects.filter(project => {
+  // State for projects - Load from localStorage on mount
+  const [allProjects, setAllProjects] = useState<Project[]>([]);
+  
+  // Filtered projects based on user permissions
+  const [visibleProjects, setVisibleProjects] = useState<Project[]>([]);
+
+  // Check if user can edit projects (Project Manager or higher)
+  const canEditProjects = canManageProjects(user);
+
+  // Load projects from localStorage on component mount
+  useEffect(() => {
+    const storedProjects = getProjectsFromStorage();
+    if (storedProjects.length > 0) {
+      setAllProjects(storedProjects);
+    } else {
+      // Initialize with mock data if storage is empty
+      setAllProjects(mockProjects);
+      saveProjectsToStorage(mockProjects);
+    }
+  }, []);
+
+  // Filter projects based on user assignments whenever projects or user changes
+  useEffect(() => {
+    const filtered = filterProjectsByUser(user, allProjects);
+    setVisibleProjects(filtered);
+  }, [user, allProjects]);
+
+  const handleSaveProject = async (projectData: Partial<Project>) => {
+    let updatedProjects: Project[];
+    
+    if (editingProject) {
+      updatedProjects = allProjects.map(p => 
+        p.id === editingProject.id ? { ...p, ...projectData, updatedAt: new Date() } : p
+      );
+      notifyProjectUpdated(projectData.projectName || editingProject.projectName, user?.name || 'PM');
+    } else {
+      const newProject: Project = {
+        ...projectData,
+        id: `proj-${Date.now()}`,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      } as Project;
+      updatedProjects = [...allProjects, newProject];
+      notifyProjectCreated(newProject.projectName, newProject.projectNumber, newProject.assignedTeamMembers || []);
+    }
+    
+    // Save to localStorage
+    setAllProjects(updatedProjects);
+    saveProjectsToStorage(updatedProjects);
+    
+    setShowProjectForm(false);
+    setEditingProject(null);
+  };
+
+  const handleEditProject = (project: Project) => {
+    if (!canEditProjects) return;
+    setEditingProject(project);
+    setShowProjectForm(true);
+  };
+
+  const handleDeleteProject = (projectId: string) => {
+    if (!canEditProjects) return;
+    if (window.confirm('Are you sure you want to delete this project?')) {
+      const proj = allProjects.find(p => p.id === projectId);
+      if (proj) notifyProjectDeleted(proj.projectName, user?.name || 'PM');
+      const updatedProjects = allProjects.filter(p => p.id !== projectId);
+      setAllProjects(updatedProjects);
+      saveProjectsToStorage(updatedProjects);
+    }
+  };
+
+  const handleViewProject = (project: Project) => {
+    setViewingProject(project);
+    setShowProjectDetail(true);
+  };
+
+  // Apply additional filters (search, phase, priority) to visible projects
+  const filteredProjects = visibleProjects.filter(project => {
     const matchesType = project.projectType === activeTab;
     const matchesSearch = 
       project.projectName.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -44,9 +136,9 @@ export const Projects: React.FC = () => {
   });
 
   const tabs = [
-    { id: 'running' as ProjectType, label: 'Running Projects', icon: FolderKanban, count: mockProjects.filter(p => p.projectType === 'running').length },
-    { id: 'dedicated' as ProjectType, label: 'Dedicated', icon: Users, count: mockProjects.filter(p => p.projectType === 'dedicated').length },
-    { id: 'maintenance' as ProjectType, label: 'Maintenance', icon: Shield, count: mockProjects.filter(p => p.projectType === 'maintenance').length },
+    { id: 'running' as ProjectType, label: 'Running Projects', icon: FolderKanban, count: visibleProjects.filter(p => p.projectType === 'running').length },
+    { id: 'dedicated' as ProjectType, label: 'Dedicated', icon: Users, count: visibleProjects.filter(p => p.projectType === 'dedicated').length },
+    { id: 'maintenance' as ProjectType, label: 'Maintenance', icon: Shield, count: visibleProjects.filter(p => p.projectType === 'maintenance').length },
   ];
 
   const phases: ProjectPhase[] = ['UI', 'Development', 'QA', 'UAT', 'Live'];
@@ -58,19 +150,52 @@ export const Projects: React.FC = () => {
       <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Projects</h1>
-          <p className="text-gray-500 mt-1">Manage and track all your projects</p>
+          <p className="text-gray-500 mt-1">
+            {canEditProjects 
+              ? 'Manage and track all projects' 
+              : 'View your assigned projects'}
+          </p>
+          {!canEditProjects && (
+            <div className="flex items-center gap-2 mt-2 text-sm text-blue-600">
+              <Info className="w-4 h-4" />
+              <span>You can only see projects you're assigned to</span>
+            </div>
+          )}
         </div>
-        <div className="flex items-center gap-3">
-          <button className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors">
-            <Download className="w-4 h-4" />
-            Export
-          </button>
-          <button className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors shadow-lg shadow-blue-600/20">
-            <Plus className="w-4 h-4" />
-            New Project
-          </button>
-        </div>
+        {canEditProjects && (
+          <div className="flex items-center gap-3">
+            <button className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors">
+              <Download className="w-4 h-4" />
+              Export
+            </button>
+            <button 
+              onClick={() => {
+                setEditingProject(null);
+                setShowProjectForm(true);
+              }}
+              className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors shadow-lg shadow-blue-600/20"
+            >
+              <Plus className="w-4 h-4" />
+              New Project
+            </button>
+          </div>
+        )}
       </div>
+
+      {/* Info Banner for Non-PM Users */}
+      {!canEditProjects && visibleProjects.length === 0 && (
+        <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+          <div className="flex items-start gap-3">
+            <Info className="w-5 h-5 text-yellow-600 mt-0.5" />
+            <div>
+              <p className="font-medium text-yellow-900">No Assigned Projects</p>
+              <p className="text-sm text-yellow-700 mt-1">
+                You don't have any projects assigned yet. Please contact your Project Manager to be assigned to projects.
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Tabs */}
       <div className="border-b border-gray-200">
@@ -188,7 +313,14 @@ export const Projects: React.FC = () => {
         viewMode === 'grid' ? (
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
             {filteredProjects.map((project) => (
-              <ProjectCard key={project.id} project={project} />
+              <ProjectCard 
+                key={project.id} 
+                project={project}
+                onView={handleViewProject}
+                onEdit={handleEditProject}
+                onDelete={handleDeleteProject}
+                canEdit={canEditProjects}
+              />
             ))}
           </div>
         ) : (
@@ -202,6 +334,7 @@ export const Projects: React.FC = () => {
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Progress</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Team</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Priority</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200">
@@ -236,6 +369,35 @@ export const Projects: React.FC = () => {
                         {project.priority}
                       </span>
                     </td>
+                    <td className="px-6 py-4">
+                      <div className="flex items-center gap-2">
+                        <button
+                          onClick={() => handleViewProject(project)}
+                          className="p-2 text-green-600 hover:bg-green-50 rounded-lg transition-colors"
+                          title="View"
+                        >
+                          <Eye className="w-4 h-4" />
+                        </button>
+                        {canEditProjects && (
+                          <>
+                            <button
+                              onClick={() => handleEditProject(project)}
+                              className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                              title="Edit"
+                            >
+                              <Edit2 className="w-4 h-4" />
+                            </button>
+                            <button
+                              onClick={() => handleDeleteProject(project.id)}
+                              className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                              title="Delete"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </button>
+                          </>
+                        )}
+                      </div>
+                    </td>
                   </tr>
                 ))}
               </tbody>
@@ -246,9 +408,35 @@ export const Projects: React.FC = () => {
         <div className="text-center py-12">
           <FolderKanban className="w-16 h-16 text-gray-300 mx-auto mb-4" />
           <h3 className="text-lg font-medium text-gray-900">No projects found</h3>
-          <p className="text-gray-500 mt-1">Try adjusting your filters or search query</p>
+          <p className="text-gray-500 mt-1">
+            {canEditProjects 
+              ? 'Try adjusting your filters or search query'
+              : 'You are not assigned to any projects in this category'
+            }
+          </p>
         </div>
       )}
+
+      {/* Project Form Modal */}
+      <ProjectForm
+        project={editingProject}
+        isOpen={showProjectForm}
+        onClose={() => {
+          setShowProjectForm(false);
+          setEditingProject(null);
+        }}
+        onSave={handleSaveProject}
+      />
+
+      {/* Project Detail Modal */}
+      <ProjectDetail
+        project={viewingProject!}
+        isOpen={showProjectDetail}
+        onClose={() => {
+          setShowProjectDetail(false);
+          setViewingProject(null);
+        }}
+      />
     </div>
   );
 };

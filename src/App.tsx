@@ -5,7 +5,7 @@
 // ==========================================
 
 import React, { useState } from 'react';
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { Sidebar } from './components/Layout/Sidebar';
 import { Header } from './components/Layout/Header';
@@ -21,6 +21,12 @@ import { Milestones } from './pages/Milestones';
 import { Maintenance } from './pages/Maintenance';
 import { Risks } from './pages/Risks';
 import { Reports } from './pages/Reports';
+import { DedicatedResources } from './pages/DedicatedResources';
+import { Notifications as NotificationsPage } from './pages/Notifications';
+import { AdminSettings } from './pages/AdminSettings';
+import { Profile } from './pages/Profile';
+import { AccountSettings } from './pages/AccountSettings';
+import { HelpSupport } from './pages/HelpSupport';
 
 import { cn } from './utils/cn';
 
@@ -30,8 +36,11 @@ const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) =
   
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="w-8 h-8 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin" />
+      <div className="flex items-center justify-center min-h-screen bg-gray-50">
+        <div className="text-center">
+          <div className="w-12 h-12 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin mx-auto mb-4" />
+          <p className="text-gray-600">Loading...</p>
+        </div>
       </div>
     );
   }
@@ -47,6 +56,14 @@ const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) =
 const MainLayout: React.FC = () => {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [isDarkMode, setIsDarkMode] = useState(false);
+  const location = useLocation();
+
+  // Close sidebar on mobile when route changes
+  React.useEffect(() => {
+    if (window.innerWidth < 1024) {
+      setSidebarOpen(false);
+    }
+  }, [location.pathname]);
 
   return (
     <div className={cn('min-h-screen bg-gray-50', isDarkMode && 'dark')}>
@@ -68,7 +85,7 @@ const MainLayout: React.FC = () => {
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/projects" element={<Projects />} />
             <Route path="/projects/running" element={<Projects />} />
-            <Route path="/projects/dedicated" element={<Projects />} />
+            <Route path="/projects/dedicated" element={<DedicatedResources />} />
             <Route path="/projects/maintenance" element={<Maintenance />} />
             <Route path="/tasks" element={<Tasks />} />
             <Route path="/resources" element={<Resources />} />
@@ -76,8 +93,14 @@ const MainLayout: React.FC = () => {
             <Route path="/milestones" element={<Milestones />} />
             <Route path="/risks" element={<Risks />} />
             <Route path="/reports" element={<Reports />} />
-            <Route path="/notifications" element={<Dashboard />} />
-            <Route path="/admin" element={<Dashboard />} />
+            <Route path="/notifications" element={<NotificationsPage />} />
+            <Route path="/profile" element={<Profile />} />
+            <Route path="/account-settings" element={<AccountSettings />} />
+            <Route path="/help-support" element={<HelpSupport />} />
+            <Route path="/admin" element={<AdminSettings />} />
+            <Route path="/admin/users" element={<AdminSettings />} />
+            <Route path="/admin/roles" element={<AdminSettings />} />
+            <Route path="/admin/settings" element={<AdminSettings />} />
           </Routes>
         </main>
       </div>

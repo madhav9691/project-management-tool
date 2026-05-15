@@ -4,7 +4,6 @@
 // ==========================================
 
 import React from 'react';
-import { Link } from 'react-router-dom';
 import type { Project } from '../../types';
 import { cn } from '../../utils/cn';
 import { formatDate, getStatusColor, formatPercentage } from '../../utils/formatters';
@@ -13,16 +12,28 @@ import {
   Calendar,
   Users,
   AlertCircle,
-  ArrowUpRight,
   Smartphone,
-  Globe
+  Globe,
+  Eye,
+  Edit2,
+  Trash2
 } from 'lucide-react';
 
 interface ProjectCardProps {
   project: Project;
+  onView?: (project: Project) => void;
+  onEdit?: (project: Project) => void;
+  onDelete?: (projectId: string) => void;
+  canEdit?: boolean;
 }
 
-export const ProjectCard: React.FC<ProjectCardProps> = ({ project }) => {
+export const ProjectCard: React.FC<ProjectCardProps> = ({ 
+  project, 
+  onView, 
+  onEdit, 
+  onDelete,
+  canEdit = false
+}) => {
   const getPlatformIcons = () => {
     const icons = [];
     if (project.platforms.android) icons.push(<Smartphone key="android" className="w-4 h-4" />);
@@ -34,7 +45,7 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({ project }) => {
   };
 
   return (
-    <div className="bg-white rounded-xl border border-gray-200 p-5 hover:shadow-lg transition-all duration-200 group">
+    <div className="bg-white rounded-xl border border-gray-200 p-5 hover:shadow-lg transition-all duration-200">
       {/* Header */}
       <div className="flex items-start justify-between mb-4">
         <div className="flex-1 min-w-0">
@@ -44,17 +55,54 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({ project }) => {
               {project.currentPhase}
             </span>
           </div>
-          <h3 className="font-semibold text-gray-900 truncate group-hover:text-blue-600 transition-colors">
+          <h3 className="font-semibold text-gray-900 truncate">
             {project.projectName}
           </h3>
           <p className="text-sm text-gray-500 truncate">{project.clientCompany}</p>
         </div>
-        <Link 
-          to={`/projects/${project.id}`}
-          className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
-        >
-          <ArrowUpRight className="w-5 h-5" />
-        </Link>
+        
+        {/* Action Buttons */}
+        <div className="flex items-center gap-1">
+          {onView && (
+            <button
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                onView(project);
+              }}
+              className="p-2 text-green-600 hover:bg-green-50 rounded-lg transition-colors"
+              title="View Details"
+            >
+              <Eye className="w-4 h-4" />
+            </button>
+          )}
+          {canEdit && onEdit && (
+            <button
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                onEdit(project);
+              }}
+              className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+              title="Edit Project"
+            >
+              <Edit2 className="w-4 h-4" />
+            </button>
+          )}
+          {canEdit && onDelete && (
+            <button
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                onDelete(project.id);
+              }}
+              className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+              title="Delete Project"
+            >
+              <Trash2 className="w-4 h-4" />
+            </button>
+          )}
+        </div>
       </div>
 
       {/* Progress Bar */}
